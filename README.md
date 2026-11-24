@@ -231,7 +231,7 @@ You play two roles:
 
 ---
 
-### Before the demo (do this before the audience arrives)
+### Pre-requisite 
 
 1. **Complete every step in setup.md first**, including its pre-delivery checklist. The demo will not run
    without it:
@@ -241,14 +241,7 @@ You play two roles:
    - run `python setup_knowledge.py` once to upload the manuals (it saves the vector store ID into `.env` for you)
    - run the offline tests
 2. Open the Foundry portal on your project's **Agents** page, so you can show the agent.
-3. Open a terminal in the `source` folder and start the agent:
-   ```powershell
-   python noc_agent.py
-   ```
-   **On screen:** `Created agent asterwave-noc-coordinator v1 in Foundry` (or `Using agent ...`), then
-   `Started conversation conv_...`, a short list of commands, `Press Enter to start the built-in scenario`,
-   and a `>` prompt. The `>` means the agent is waiting for you. If you see `Previous incident cleared`,
-   that's expected: every run without `--resume` starts the story from the beginning.
+
 
 **Four things to know**
 
@@ -287,6 +280,10 @@ is 18% busier than last week. In 15 minutes the control room gets 185 alarms. Bu
 and Cebu can't use mobile data, and everyday customers in Makati, like Mei Tan, are complaining. Today the
 engineer on duty would juggle an alarm screen, dashboards, the instruction manual, the change calendar and a
 conference call. Let's ask the agent instead."
+
+Open a terminal in the `source` folder and start the agent:
+   ```powershell
+   python noc_agent.py
 
 **Type:** press **Enter**. The app sends the built-in opening message and prints it as
 `(using default scenario) ...`:
