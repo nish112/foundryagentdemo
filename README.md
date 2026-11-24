@@ -285,7 +285,7 @@ Open a terminal in the `source` folder and start the agent:
    ```powershell
    python noc_agent.py
 
-**Type:** press **Enter**. The app sends the built-in opening message and prints it as
+press **Enter**. The app sends the built-in opening message and prints it as
 `(using default scenario) ...`:
 
 ```text
