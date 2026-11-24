@@ -20,7 +20,7 @@ New to telecom? Read section 2 of README.md (telecom primer and glossary) before
 | Foundry project | A Foundry (new) project. Copy its **project endpoint** from the project welcome page. Format: `https://<resource-name>.services.ai.azure.com/api/projects/<project-name>` |
 | Model deployment | A chat model deployed in the project that supports **function calling** and **file search** with agents (for example a current GPT-4.1 or GPT-5 family model; check the model and region support pages in the Foundry docs). Note the **deployment name**, not the model name. Reasoning-capable models give the best diagnosis narrative; mini models work but give shorter answers. |
 | Roles | **Foundry User** (formerly Azure AI User) on the project, to create and run agents. **Storage Blob Data Contributor** on the project's storage account, to upload the knowledge files. |
-| Python | 3.10 or later (`python --version`) |
+| Python | 3.10 to 3.13, **64-bit (x64)**. On Windows, use x64 Python 3.13 (see section 2). Avoid 32-bit Python and very new releases, which can make the install fail with a `cryptography` build error |
 | Azure CLI | Installed and signed in with `az login` (the code uses `DefaultAzureCredential`) |
 | Network | Outbound HTTPS to `*.services.ai.azure.com` and `login.microsoftonline.com` |
 | Terminal | Windows Terminal / PowerShell (commands below), or bash on macOS/Linux. Use a large font: participants read the tool lines. |
@@ -30,15 +30,70 @@ New to telecom? Read section 2 of README.md (telecom primer and glossary) before
 
 ## 2. Install
 
-Open a terminal in the `source` folder.
+Open a terminal in the `source` folder. Follow **2A on Windows** (recommended for everyone, it avoids the
+`cryptography` error described below) or **2B on macOS/Linux**.
+
+### 2A. Windows (PowerShell): x64 Python 3.13, prebuilt packages only
 
 ```powershell
 cd Foundry\noc-incident-coordinator\source
-python -m venv .venv
-.venv\Scripts\activate            # macOS/Linux: source .venv/bin/activate
+
+# 1. See which Python you have now (version and platform)
+python -c "import sys, sysconfig; print(sys.version.split()[0], sysconfig.get_platform())"
+#    Good: 3.13.x win-amd64     Problem: win32 (32-bit), win-arm64, or 3.14+
+
+# 2. Install x64 Python 3.13 and confirm its tag
+py install 3.13-64
+py list                           # 3.13-64 must appear in the list
+
+# 3. Create the environment with the x64 Python
+#    (if an earlier attempt failed, delete the old one first: Remove-Item -Recurse -Force .venv)
+py -V:3.13-64 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 # If PowerShell blocks activation: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+# 4. Confirm the environment is x64 Python 3.13
+python -c "import sys, sysconfig; print(sys.version.split()[0], sysconfig.get_platform())"
+#    Expected: 3.13.x win-amd64
+
+# 5. Install packages, refusing to compile anything
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install --only-binary=:all: -r requirements.txt
+```
+
+**Why these steps (the `cryptography` error)**
+
+The sign-in package (`azure-identity`) depends on a security library called `cryptography`. Normally pip
+downloads a ready-made (prebuilt) copy of it. If no prebuilt copy exists for your Python, for example
+32-bit Python, Windows on Arm Python, or a Python release newer than the library supports, pip tries to
+**compile it from source**. That needs a Rust compiler and C++ build tools, which most laptops do not have,
+so the install fails with messages such as:
+
+```text
+error: can't find Rust compiler
+Failed building wheel for cryptography
+Microsoft Visual C++ 14.0 or greater is required
+```
+
+The fix is to use a Python that has prebuilt copies (x64 Python 3.13), and tell pip never to compile
+(`--only-binary=:all:`). If a prebuilt copy is still missing, pip now stops with a short, clear
+"No matching distribution" message instead of a long compiler error.
+
+> **`py install` not recognised?** That command comes from the Python install manager. Either install the
+> Python install manager from python.org (or the Microsoft Store), or download the **Windows installer
+> (64-bit)** for Python 3.13 from python.org, then use `py -3.13 -m venv .venv` in step 3 instead.
+>
+> **Windows on Arm laptop (for example Surface Pro with Snapdragon)?** Still use `3.13-64`. The x64 Python
+> runs under Windows emulation and gets the prebuilt packages.
+
+### 2B. macOS / Linux
+
+```bash
+cd Foundry/noc-incident-coordinator/source
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install --only-binary=:all: -r requirements.txt
 ```
 
 `requirements.txt` installs:
@@ -114,6 +169,10 @@ python noc_agent.py
 
 In-session commands: `/advance <minutes>`, `/status`, `/reset`, `/help`, `/exit`.
 
+**To quit the agent:** type `/exit` (or `exit` or `quit`) at the `>` prompt, or press **Ctrl+C**. The
+incident and conversation are kept. Run `python noc_agent.py --resume` to continue, or
+`python noc_agent.py --cleanup` after the event to remove the agent from Foundry.
+
 The first run creates the agent in Foundry. Later runs reuse it while the instructions,
 tools, model and vector store stay the same. Each agent turn usually takes a few seconds to
 tens of seconds, depending on the model and how many tools it calls.
@@ -129,13 +188,13 @@ You should see `asterwave-noc-coordinator` with its instructions, file search an
 **The day before**
 - [ ] `python -m unittest discover -s tests` shows `OK`
 - [ ] `python setup_knowledge.py` completed and `.env` has `FOUNDRY_NOC_VECTOR_STORE_ID`
-- [ ] One full rehearsal using README section 7 (with approvals typed by you)
+- [ ] One full rehearsal using README section 8 (with approvals typed by you)
 - [ ] Note the model deployment name and region in case someone asks
 - [ ] Record a backup screen capture of a full run (in case the venue network fails)
 
 **One hour before**
 - [ ] `az login` (tokens expire) and `az account show` shows the right subscription
-- [ ] Start fresh: `python noc_agent.py`, then `/reset`, then `/exit` (or delete the `runs` folder)
+- [ ] Start fresh: `python noc_agent.py` (without `--resume`) clears the previous incident automatically
 - [ ] Foundry portal open on the project's Agents page, signed in
 - [ ] Terminal font enlarged; `runs/outbox` folder ready to open in an editor
 - [ ] README demo steps open on a second screen
@@ -180,11 +239,14 @@ demo run is a small number of turns, but delete unused vector stores and agent v
 | Agent replies like a generic assistant, ignoring the NOC role | Agent not bound to the request (older 2.x SDK) | Upgrade `azure-ai-projects` to the latest version; run with `--new-version` |
 | Model deployment not found / tools not supported | Wrong deployment name or a model without tool support | Check `FOUNDRY_MODEL_NAME`; use a model that supports function calling |
 | No `[file_search]` lines and no citations | Vector store not indexed | Rerun `setup_knowledge.py`; check every file shows `completed` |
-| Verify keeps saying MONITORING | Demo clock not advanced | Type `/advance 5` before asking for status (step 7 of the demo) |
+| Verify keeps saying MONITORING | Demo clock not advanced | Type `/advance 5` before asking for status (Step 4 of the demo) |
 | Proposal returns BLOCKED | A runbook rule applied (missing diagnostics, change pending or still settling, precondition not met) | Expected behaviour: follow the reason in the tool result; for the demo, run all 5 checks first |
 | Care advisory REJECTED | Customer wording contained internal terms (ring, node, APN names) | Expected behaviour: ask the agent to rewrite in plain language |
 | `An open incident already exists` | Previous run state | `/reset` in the session, or delete `runs/` |
 | Agent talks about an old incident the tools do not know | Old conversation reused with fresh local state | Use `/reset` (starts a new conversation) or run without `--resume` |
+| Pressing Enter does nothing / no `(using default scenario)` line | An incident is already open (you used `--resume`, or an older version of the code kept the last incident) | Type `/reset`, then press Enter. Or run `python noc_agent.py` without `--resume` |
+| `Failed building wheel for cryptography`, `can't find Rust compiler` or `Microsoft Visual C++ 14.0 or greater is required` during install | Your Python has no prebuilt `cryptography` package (32-bit, Windows on Arm, or a too-new Python), so pip tries to compile it | Follow section 2A: delete `.venv`, `py install 3.13-64`, `py -V:3.13-64 -m venv .venv`, activate, then `python -m pip install --only-binary=:all: -r requirements.txt` |
+| `No matching distribution found` with `--only-binary=:all:` | No prebuilt package for this Python version or platform | Check step 1 of section 2A shows `3.13.x win-amd64`; if not, recreate `.venv` with `py -V:3.13-64` |
 | `python` not found, or the Microsoft Store opens | Python not on PATH (Windows) | Use `py -3 -m venv .venv`, or reinstall Python with "Add to PATH" |
 | `az` not found | Azure CLI not installed | Install the Azure CLI, open a new terminal, then `az login` |
 | PowerShell: "running scripts is disabled" | Execution policy blocks venv activation | `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`, then activate again |
@@ -197,3 +259,6 @@ demo run is a small number of turns, but delete unused vector stores and agent v
 - Create a prompt agent: https://learn.microsoft.com/en-us/azure/foundry/agents/quickstarts/prompt-agent
 - File search tool: https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/file-search
 - Function calling: https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/function-calling
+- Python on Windows and the Python install manager (`py install`, `py list`, `py -V:`): https://docs.python.org/3/using/windows.html
+- pip install options (`--only-binary`): https://pip.pypa.io/en/stable/cli/pip_install/
+- cryptography installation and supported platforms: https://cryptography.io/en/latest/installation/
