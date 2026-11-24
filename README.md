@@ -494,9 +494,9 @@ to check.
 
 | You type | On screen | What it means |
 |---|---|---|
-| `/advance 5`, then `Is service restored?` | **MONITORING**: C1 latency improved 38% (PASS), C2 packet loss 9 vs limit 7 (PENDING), C3 0 of 2 clean DNS windows (PENDING) | 5 minutes later: delay is better, but data loss and lookups aren't there yet |
-| `/advance 5`, then `Status?` | **MONITORING**: C1, C2 PASS, C3 1 of 2 | 10 minutes later: only one clean lookup period so far; it needs two in a row |
-| `/advance 5`, then `Status?` | **SERVICE RESTORED**: all pass (latency improved 56%). Next steps: 30-minute soak, update the care advisory, raise a problem record (workaround), fail-back plan, PIR | 15 minutes later: fully recovered, but there's still a 30-minute watch period, and tonight's fix is only temporary |
+| `/advance 5`,press "ENTER" then TYPE `Is service restored?` | **MONITORING**: C1 latency improved 38% (PASS), C2 packet loss 9 vs limit 7 (PENDING), C3 0 of 2 clean DNS windows (PENDING) | 5 minutes later: delay is better, but data loss and lookups aren't there yet |
+| `/advance 5`, press "ENTER" then TYPE `Status?` | **MONITORING**: C1, C2 PASS, C3 1 of 2 | 10 minutes later: only one clean lookup period so far; it needs two in a row |
+| `/advance 5`, press "ENTER" then TYPE `Status?` | **SERVICE RESTORED**: all pass (latency improved 56%). Next steps: 30-minute soak, update the care advisory, raise a problem record (workaround), fail-back plan, PIR | 15 minutes later: fully recovered, but there's still a 30-minute watch period, and tonight's fix is only temporary |
 
 **Say:** "Many teams would have closed this at minute 5, when the delay looked fine. The manual requires all
 three tests, and the tests are calculated by code, not guessed by the AI. And 'restored' isn't 'closed'.
