@@ -1,0 +1,48 @@
+{
+  "queue_depth": {
+    "path": "PGW-MNL-ENT-01 egress -> TR-7 (PE-MNL-TR7-01/02)",
+    "tr7_egress_queue_pct": 94,
+    "tr7_egress_queue_baseline_pct": 41,
+    "tr7_interface_drop_pct": 3.2,
+    "saturation_started_minutes_ago": 16,
+    "finding": "TR-7 enterprise egress queue saturated (94% vs 41% baseline) with interface drops above 1%, starting about 16 minutes ago."
+  },
+  "gateway_restarts": {
+    "window_minutes": 30,
+    "SGW-MNL-02": 0,
+    "SGW-CEB-01": 0,
+    "PGW-MNL-ENT-01": 0,
+    "finding": "No gateway process restarts in the last 30 minutes; gateways are healthy, CPU below 60%."
+  },
+  "change_log": {
+    "window_minutes": 120,
+    "changes": [
+      {
+        "change_id": "CHG-88412",
+        "ring": "TR-7",
+        "type": "QoS shaping profile",
+        "summary": "Evening shaping profile EVE-3 applied: consumer video class weight raised by 10%",
+        "applied_minutes_ago": 38,
+        "status": "Implemented, standard change"
+      }
+    ],
+    "traffic_trend": "TR-7 evening traffic +18% versus same day last week (live sports streaming event)",
+    "finding": "CHG-88412 raised consumer video weight on TR-7 38 minutes ago. Degradation started about 22 minutes later, when peak traffic (+18% week on week) arrived. Likely a contributing factor that reduced headroom for enterprise traffic, not the sole trigger."
+  },
+  "kpi_baseline": {
+    "user_plane_latency_ms_24h_baseline": 38,
+    "user_plane_latency_ms_same_day_last_week": 44,
+    "user_plane_latency_ms_current_peak": 142,
+    "packet_loss_alarms_24h_baseline_per_15min": 2,
+    "dns_timeout_bursts_24h_baseline_per_5min": 0,
+    "finding": "Latency is 3.7x the 24-hour baseline and 3.2x the same day last week; packet loss and DNS bursts far above baseline."
+  },
+  "standby_capacity": {
+    "standby_ring": "TR-5",
+    "tr5_current_utilisation_pct": 38,
+    "enterprise_apn_load_to_move_pct_of_tr5": 23,
+    "tr5_projected_utilisation_pct_after_reroute": 61,
+    "planning_threshold_pct": 70,
+    "finding": "Moving enterprise APN traffic to TR-5 takes it to about 61%, below the 70% planning threshold. Reroute is safe."
+  }
+}

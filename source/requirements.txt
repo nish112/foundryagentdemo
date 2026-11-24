@@ -1,0 +1,16 @@
+# AsterWave NOC Incident Coordinator - Python dependencies
+# Python 3.10 or later. Install with:  python -m pip install -r requirements.txt
+
+# Foundry Agent Service SDK (projects "new" API: prompt agents, conversations, vector stores)
+azure-ai-projects>=2.3.0
+
+# Microsoft Entra ID sign-in (DefaultAzureCredential uses your az login session)
+azure-identity>=1.18.0
+
+# OpenAI-compatible client returned by the Foundry project (responses, conversations, files)
+openai>=1.99.0
+
+# Loads FOUNDRY_* settings from the .env file
+python-dotenv>=1.0.1
+
+# Offline tests use the Python standard library (unittest); nothing extra is needed.

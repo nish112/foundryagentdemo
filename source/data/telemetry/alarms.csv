@@ -1,0 +1,14 @@
+minutes_ago,region,node,transport_ring,alarm_type,count,enterprise_apn_impact
+15,Manila,PE-MNL-TR7-01,TR-7,LINK_UTIL_HIGH,4,yes
+13,Manila,PE-MNL-TR7-01,TR-7,QUEUE_DROP,6,yes
+14,Manila,SGW-MNL-02,TR-7,SGW_LATENCY,38,yes
+11,Manila,SGW-MNL-02,TR-7,SGW_LATENCY,34,yes
+7,Cebu,SGW-CEB-01,TR-7,SGW_LATENCY,27,yes
+3,Cebu,SGW-CEB-01,TR-7,SGW_LATENCY,21,yes
+12,Manila,SGW-MNL-02,TR-7,PACKET_LOSS,14,yes
+8,Manila,SGW-MNL-02,TR-7,PACKET_LOSS,11,yes
+5,Cebu,SGW-CEB-01,TR-7,PACKET_LOSS,10,yes
+10,Manila,DNS-MNL-01,TR-7,DNS_TIMEOUT,7,yes
+6,Cebu,DNS-CEB-01,TR-7,DNS_TIMEOUT,6,yes
+2,Manila,DNS-MNL-01,TR-7,DNS_TIMEOUT,5,yes
+9,Davao,SGW-DVO-01,TR-2,SGW_LATENCY,2,no

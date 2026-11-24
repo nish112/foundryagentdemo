@@ -1,0 +1,6 @@
+minutes_after_action,user_plane_latency_ms,packet_loss_alarms,dns_timeout_bursts
+0,142,35,6
+5,88,9,2
+10,71,5,0
+15,62,3,0
+20,58,2,0
