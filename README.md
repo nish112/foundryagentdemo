@@ -1,6 +1,6 @@
 # NOC Incident Coordinator: an AI agent on Microsoft Foundry
 
-**A back-office demo for trainers. No telecom background needed.**
+**A back-office demo for trainers. **
 
 | | |
 |---|---|
